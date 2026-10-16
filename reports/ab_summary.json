@@ -1,0 +1,112 @@
+{
+  "users": 35921,
+  "srm": {
+    "control": 18033,
+    "treatment": 17888,
+    "p_value": 0.4442,
+    "ok": true
+  },
+  "power": {
+    "baseline_bnpl_conv": 0.062,
+    "mde_abs": 0.0071,
+    "mde_rel": 0.115
+  },
+  "primary_bnpl_conversion": {
+    "control": 0.062,
+    "treatment": 0.0713,
+    "abs_diff": 0.0093,
+    "rel_lift": 0.1506,
+    "ci95_abs": [
+      0.0042,
+      0.0145
+    ],
+    "p_value": 0.0004
+  },
+  "guardrail_any_conversion": {
+    "control": 0.2502,
+    "treatment": 0.2564,
+    "abs_diff": 0.0063,
+    "rel_lift": 0.0251,
+    "ci95_abs": [
+      -0.0027,
+      0.0153
+    ],
+    "p_value": 0.1714
+  },
+  "secondary_bnpl_gmv_per_user": {
+    "raw": {
+      "control": 616.0,
+      "treatment": 660.65,
+      "abs_diff": 44.64,
+      "rel_lift": 0.0725,
+      "ci95_abs": [
+        -29.04,
+        118.32
+      ],
+      "se": 37.592,
+      "p_value": 0.235
+    },
+    "cuped": {
+      "control": 613.53,
+      "treatment": 663.14,
+      "abs_diff": 49.62,
+      "rel_lift": 0.0809,
+      "ci95_abs": [
+        -23.54,
+        122.78
+      ],
+      "se": 37.327,
+      "p_value": 0.1838
+    },
+    "theta": {
+      "bnpl_gmv_pre": -0.0,
+      "bnpl_orders_pre": 377.92,
+      "orders_pre": -117.696,
+      "sessions_pre": 34.053
+    },
+    "corr_with_covariates": {
+      "bnpl_gmv_pre": 0.057,
+      "bnpl_orders_pre": 0.092,
+      "orders_pre": 0.08,
+      "sessions_pre": 0.105
+    },
+    "variance_reduction": 0.014,
+    "bootstrap_ci95_raw": [
+      -29.8,
+      119.96
+    ],
+    "winsorized_p99": {
+      "cap_rub": 46891,
+      "control": 610.98,
+      "treatment": 658.7,
+      "abs_diff": 47.72,
+      "rel_lift": 0.0781,
+      "ci95_abs": [
+        -24.86,
+        120.3
+      ],
+      "se": 37.031,
+      "p_value": 0.1975,
+      "variance_reduction": 0.03
+    }
+  },
+  "guardrail_fpd30": {
+    "control": 0.02,
+    "treatment": 0.0147,
+    "abs_diff": -0.0053,
+    "rel_lift": -0.2634,
+    "ci95_abs": [
+      -0.0154,
+      0.0049
+    ],
+    "p_value": 0.3093,
+    "loans": [
+      1203,
+      1361
+    ]
+  },
+  "aa_peeking_simulation": {
+    "fpr_fixed_horizon": 0.046,
+    "fpr_daily_peeking": 0.27
+  }
+}

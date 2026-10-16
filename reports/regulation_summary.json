@@ -1,0 +1,42 @@
+{
+  "n_checkouts": 10559,
+  "group_means": {
+    "above_cap=0,post=0": {
+      "converted": 0.8286,
+      "bnpl": 0.2759
+    },
+    "above_cap=0,post=1": {
+      "converted": 0.8378,
+      "bnpl": 0.2733
+    },
+    "above_cap=1,post=0": {
+      "converted": 0.8455,
+      "bnpl": 0.3223
+    },
+    "above_cap=1,post=1": {
+      "converted": 0.8013,
+      "bnpl": 0.0
+    }
+  },
+  "did": {
+    "converted": {
+      "did": -0.0532,
+      "ci95": [
+        -0.092,
+        -0.0145
+      ],
+      "p_value": 0.00706
+    },
+    "bnpl": {
+      "did": -0.32,
+      "ci95": [
+        -0.3635,
+        -0.2765
+      ],
+      "p_value": 3.5e-47
+    }
+  },
+  "weeks_post": 27,
+  "lost_bnpl_gmv_rub": 29918391,
+  "lost_marketplace_gmv_rub": 8375317
+}

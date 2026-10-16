@@ -1,0 +1,26 @@
+{
+  "avg_dau": 2413,
+  "avg_mau": 29140,
+  "stickiness": 0.087,
+  "funnel": {
+    "cr_offer": 0.978,
+    "cr_select": 0.251,
+    "approval": 0.775,
+    "checkout_to_bnpl": 0.19
+  },
+  "retention_m1": 0.093,
+  "retention_m3": 0.099,
+  "matured_vintages": {
+    "vintages": [
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04",
+      "2026-05"
+    ],
+    "loss_rate": 0.0248,
+    "margin_per_order": 108.1,
+    "margin_pct_gmv": 0.0098,
+    "aov": 11074
+  }
+}
