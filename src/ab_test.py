@@ -71,6 +71,7 @@ LEFT JOIN m USING (user_id)
 LEFT JOIN pre p USING (user_id)
 LEFT JOIN pre_sessions s USING (user_id)
 LEFT JOIN fpd f USING (user_id)
+ORDER BY u.user_id
 """
 
 
@@ -200,7 +201,8 @@ def main() -> dict:
         mid = b["rel_lift"] * 100
         color = COLORS["green"] if lo > 0 and i < 3 else (COLORS["accent"] if i == 3 and lo > 0 else COLORS["grey"])
         ax.errorbar(mid, i, xerr=[[mid - lo], [hi - mid]], fmt="o", color=color, capsize=4, lw=2)
-        ax.text(hi + 1, i, f"{mid:+.1f}%  (p={b['p_value']:.3f})", va="center", fontsize=8)
+        p_txt = "p<0,001" if b["p_value"] < 0.001 else f"p={b['p_value']:.3f}".replace(".", ",")
+        ax.text(hi + 1, i, f"{mid:+.1f}%  ({p_txt})".replace(".", ","), va="center", fontsize=8)
     ax.axvline(0, color="k", lw=0.8)
     ax.set_yticks(range(len(labels)), labels); ax.invert_yaxis()
     ax.set(xlabel="относительный эффект, % (95% ДИ)", title="Итоги A/B «Сплит на карточке товара»")

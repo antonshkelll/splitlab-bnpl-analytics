@@ -72,8 +72,8 @@
     },
     "variance_reduction": 0.014,
     "bootstrap_ci95_raw": [
-      -29.8,
-      119.96
+      -28.74,
+      115.44
     ],
     "winsorized_p99": {
       "cap_rub": 46891,

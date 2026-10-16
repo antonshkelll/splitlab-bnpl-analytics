@@ -33,7 +33,7 @@ def main() -> dict:
     fig, ax = plt.subplots(figsize=(7, 3.2))
     ax.plot(w.index, w.bnpl_gmv / w.gmv * 100, color=COLORS["main"], lw=2)
     ax.axvline(law, color=COLORS["accent"], ls="--")
-    ax.text(law, ax.get_ylim()[1] * 0.98, "  283-ФЗ: лимит 50 000 ₽", color=COLORS["accent"], va="top")
+    ax.text(law, ax.get_ylim()[1] * 0.98, "  1 апреля: рассрочка > 50 000 ₽ отключена", color=COLORS["accent"], va="top")
     ax.set(title="Доля оплаты частями в GMV, % (по неделям)", ylabel="%")
     fig.tight_layout(); fig.savefig(FIG / "bnpl_share.png"); plt.close(fig)
 
@@ -67,7 +67,8 @@ def main() -> dict:
     e = econ.copy()
     per = lambda c: e[c] / e.bnpl_orders
     fig, ax = plt.subplots(figsize=(7, 3.4))
-    x = pd.to_datetime(e.vintage).dt.strftime("%b")
+    ru_months = ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"]
+    x = [ru_months[m - 1] for m in pd.to_datetime(e.vintage).dt.month]
     ax.bar(x, per("revenue_merchant_fee"), color=COLORS["green"], label="комиссия мерчанта")
     bottom = np.zeros(len(e))
     for c, col, lab in [("cost_funding", "#F2CF5B", "фондирование"), ("cost_credit_losses", COLORS["accent"], "кредитные потери 90+"),
@@ -80,14 +81,16 @@ def main() -> dict:
     first_young = int((~e.matured).idxmax()) if (~e.matured).any() else None
     if first_young is not None:
         ax.axvspan(first_young - 0.5, len(e) - 0.5, color="k", alpha=0.06)
-        ax.text(first_young - 0.4, ax.get_ylim()[1] * 0.92, "винтажи не созрели:\nпотери 90+ ещё впереди", fontsize=7)
+        ax.text(len(e) - 0.6, ax.get_ylim()[0] * 0.55, "займы ещё не созрели:\nпотери 90+ впереди", fontsize=7,
+                ha="right", va="center", color=COLORS["grey"])
     ax.set(title="Юнит-экономика на один BNPL-заказ, ₽ (по месяцу выдачи)", ylabel="₽ на заказ")
     ax.legend(frameon=False, fontsize=7, ncol=3, loc="lower left")
     fig.tight_layout(); fig.savefig(FIG / "unit_economics.png"); plt.close(fig)
 
     m = econ[econ.matured]
     summary = dict(
-        avg_dau=int(daily.dau.mean()), avg_mau=int(daily.mau.iloc[30:].mean()),
+        # первые 30 дней MAU ещё «набирается», поэтому все три показателя считаем без них
+        avg_dau=int(daily.dau.iloc[30:].mean()), avg_mau=int(daily.mau.iloc[30:].mean()),
         stickiness=round(float((daily.dau / daily.mau).iloc[30:].mean()), 3),
         funnel=dict(cr_offer=round(tot.offer_shown / tot.checkout, 3), cr_select=round(tot.selected / tot.offer_shown, 3),
                     approval=round(tot.approved / tot.selected, 3), checkout_to_bnpl=round(tot.approved / tot.checkout, 3)),

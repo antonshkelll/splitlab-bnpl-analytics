@@ -37,6 +37,8 @@
     }
   },
   "weeks_post": 27,
-  "lost_bnpl_gmv_rub": 29918391,
-  "lost_marketplace_gmv_rub": 8375317
+  "exposed_gmv_rub": 157430770,
+  "lost_bnpl_gmv_rub": 50377846,
+  "lost_marketplace_gmv_rub": 8375317,
+  "switched_to_other_payment_share": 0.834
 }

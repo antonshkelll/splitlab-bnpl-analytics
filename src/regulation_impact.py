@@ -1,10 +1,14 @@
 """
-Как лимит 50 000 ₽ из 283-ФЗ (с 1 апреля 2026) повлиял на BNPL?
+Сколько стоило отключение рассрочки для корзин дороже 50 000 ₽ (с 1 апреля 2026)?
+
+По 283-ФЗ с 1 апреля 2026 сведения о рассрочках выше 50 000 ₽ передаются в бюро кредитных историй.
+В данных заложен сценарий, где сервис в ответ перестал предлагать рассрочку для таких корзин.
 
 Наивное «было/стало» не годится: сервис растёт, и общий BNPL GMV после апреля всё равно вырос.
 Поэтому используем difference-in-differences:
   * «обработанная» группа — корзины > 50 000 ₽ (им перестали предлагать рассрочку);
-  * контроль — корзины 20–50 000 ₽ (похожие покупки, лимит их не затронул).
+  * контроль — корзины 20–50 000 ₽ (похожие покупки, изменение их не затронуло).
+Корзины дороже 150 000 ₽ не берём: их мало, и они не похожи на контрольную группу.
 Метрика — доля чекаутов, завершившихся покупкой (любым способом), и доля BNPL.
 Плюс оценка потерянного BNPL GMV в рублях.
 """
@@ -51,12 +55,13 @@ def main() -> dict:
 
     g = df.groupby(["above_cap", "post"])[["converted", "bnpl"]].mean().round(4)
 
-    # потерянный BNPL GMV: сколько BNPL-оборота приходилось на корзины > 50k до закона (в неделю)
-    weekly_pre = df[(df.post == 0) & (df.above_cap == 1) & (df.bnpl == 1)].groupby("week").amount.sum()
+    # Потери считаем из тех же DiD-оценок: умножаем эффект на оборот корзин > 50k после изменения.
+    # Наивное «было в неделю × недели» не годится — сервис растёт, корзин стало больше.
     weeks_post = df[df.post == 1].week.nunique()
-    lost_bnpl_gmv = float(weekly_pre.mean() * weeks_post)
-    # часть этих покупок всё равно состоялась картой — реально «потерянный» GMV маркетплейса меньше
-    lost_orders_gmv = float(-res["converted"]["did"] * df[(df.post == 1) & (df.above_cap == 1)].amount.sum())
+    exposed_gmv = float(df[(df.post == 1) & (df.above_cap == 1)].amount.sum())
+    lost_bnpl_gmv = -res["bnpl"]["did"] * exposed_gmv          # оборот, который ушёл из рассрочки
+    lost_orders_gmv = -res["converted"]["did"] * exposed_gmv   # оборот, который маркетплейс потерял совсем
+    switched_share = 1 - res["converted"]["did"] / res["bnpl"]["did"]
 
     # график: конверсия чекаута в покупку по неделям, две группы
     wk = df.groupby(["week", "above_cap"]).agg(conv=("converted", "mean"), bnpl=("bnpl", "mean")).reset_index()
@@ -79,8 +84,10 @@ def main() -> dict:
         group_means={f"above_cap={a},post={p}": v for (a, p), v in g.to_dict("index").items()},
         did=res,
         weeks_post=int(weeks_post),
+        exposed_gmv_rub=round(exposed_gmv),
         lost_bnpl_gmv_rub=round(lost_bnpl_gmv),
         lost_marketplace_gmv_rub=round(lost_orders_gmv),
+        switched_to_other_payment_share=round(switched_share, 3),
     )
     (ROOT / "reports" / "regulation_summary.json").write_text(json.dumps(out, ensure_ascii=False, indent=2))
     print(json.dumps(out, ensure_ascii=False, indent=2))
