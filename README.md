@@ -1,5 +1,7 @@
 # SplitLab
 
+[![CI](https://github.com/antonshkelll/splitlab-bnpl-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/antonshkelll/splitlab-bnpl-analytics/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/Python-3.12-3776AB) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
 Продуктовая аналитика сервиса «оплата частями» (BNPL) внутри маркетплейса, по аналогии с Яндекс Сплитом и Долями. Четыре вопроса, которые были у таких команд в 2026 году:
 
 1. Как выглядят аудитория, воронка и удержание?
@@ -140,3 +142,10 @@ python src/generate_data.py; python src/marts.py; python src/regulation_impact.p
 ## Стек
 
 SQL (DuckDB: CTE, оконные функции, FILTER, скользящие окна) · pandas · SciPy · statsmodels · matplotlib
+
+## Связанные проекты
+
+- [Uplift](https://github.com/antonshkelll/uplift-targeting) — кому показывать предложение
+- [Экономика быстрого платежа](https://github.com/antonshkelll/sbp-economics) — стоимость платежа для продавца
+
+Все проекты — в [профиле](https://github.com/antonshkelll).
