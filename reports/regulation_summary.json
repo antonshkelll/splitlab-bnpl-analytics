@@ -36,6 +36,89 @@
       "p_value": 3.5e-47
     }
   },
+  "placebo": [
+    {
+      "converted": {
+        "did": -0.0765,
+        "ci95": [
+          -0.1465,
+          -0.0064
+        ],
+        "p_value": 0.0324
+      },
+      "bnpl": {
+        "did": -0.0989,
+        "ci95": [
+          -0.1924,
+          -0.0054
+        ],
+        "p_value": 0.0381
+      },
+      "fake_date": "2026-02-01",
+      "n_checkouts": 2516,
+      "passed": true
+    },
+    {
+      "converted": {
+        "did": -0.0364,
+        "ci95": [
+          -0.1034,
+          0.0307
+        ],
+        "p_value": 0.288
+      },
+      "bnpl": {
+        "did": -0.0904,
+        "ci95": [
+          -0.1759,
+          -0.0049
+        ],
+        "p_value": 0.0383
+      },
+      "fake_date": "2026-02-15",
+      "n_checkouts": 2516,
+      "passed": true
+    },
+    {
+      "converted": {
+        "did": -0.0202,
+        "ci95": [
+          -0.0888,
+          0.0484
+        ],
+        "p_value": 0.564
+      },
+      "bnpl": {
+        "did": -0.1,
+        "ci95": [
+          -0.186,
+          -0.0141
+        ],
+        "p_value": 0.0226
+      },
+      "fake_date": "2026-03-01",
+      "n_checkouts": 2516,
+      "passed": false
+    }
+  ],
+  "did_with_group_trends": {
+    "converted": {
+      "did": -0.0065,
+      "ci95": [
+        -0.0691,
+        0.056
+      ],
+      "p_value": 0.838
+    },
+    "bnpl": {
+      "did": -0.3035,
+      "ci95": [
+        -0.3572,
+        -0.2497
+      ],
+      "p_value": 1.83e-28
+    }
+  },
   "weeks_post": 27,
   "exposed_gmv_rub": 157430770,
   "lost_bnpl_gmv_rub": 50377846,

@@ -11,6 +11,12 @@
 Корзины дороже 150 000 ₽ не берём: их мало, и они не похожи на контрольную группу.
 Метрика — доля чекаутов, завершившихся покупкой (любым способом), и доля BNPL.
 Плюс оценка потерянного BNPL GMV в рублях.
+
+Проверка допущения о параллельных трендах — placebo-тест: та же регрессия только на данных
+до 1 апреля с фиктивной датой «изменения» 15 февраля. Если тренды параллельны, «эффект»
+фиктивной даты должен быть близок к нулю и статистически незначим. Дополнительно — DiD
+с отдельным линейным трендом для каждой группы: если оценка от этого почти не меняется,
+вывод устойчив к расхождению трендов.
 """
 import json
 
@@ -40,18 +46,43 @@ LEFT JOIN paid p ON p.user_id = c.user_id AND p.amount = c.amount
 """
 
 
+PLACEBO_DATES = ("2026-02-01", "2026-02-15", "2026-03-01")
+ALPHA = 0.05 / 2          # поправка Бонферрони: проверяем две метрики
+
+
+def did_estimate(df: pd.DataFrame, y: str, post: str = "post", trends: bool = False) -> dict:
+    """DiD-оценка эффекта above_cap × post с эффектами категорий и кластеризацией по пользователю.
+    trends=True добавляет каждой группе свой линейный тренд по неделям."""
+    extra = " + t + above_cap:t" if trends else ""
+    if trends and "t" not in df:
+        df = df.assign(t=(df.ts - df.ts.min()).dt.days / 7)
+    m = smf.ols(f"{y} ~ above_cap * {post}{extra} + C(category)", data=df).fit(
+        cov_type="cluster", cov_kwds={"groups": df.user_id})
+    term = f"above_cap:{post}"
+    b, ci = m.params[term], m.conf_int().loc[term]
+    return dict(did=round(b, 4), ci95=[round(ci[0], 4), round(ci[1], 4)], p_value=float(f"{m.pvalues[term]:.2e}"))
+
+
+def placebo(df: pd.DataFrame, fake_date: str) -> dict:
+    """Та же DiD только на данных до закона, с фиктивной датой изменения."""
+    pre = df[df.ts < pd.Timestamp(LAW_DATE)].copy()
+    pre["fake_post"] = (pre.ts >= pd.Timestamp(fake_date)).astype(int)
+    out = {y: did_estimate(pre, y, post="fake_post") for y in ("converted", "bnpl")}
+    out["fake_date"] = fake_date
+    out["n_checkouts"] = len(pre)
+    out["passed"] = all(out[y]["p_value"] >= ALPHA for y in ("converted", "bnpl"))
+    return out
+
+
 def main() -> dict:
     con = connect()
     df = con.execute(SQL).df()
     df = df[df.ts < "2026-10-01"]
 
     # DiD-регрессия с кластеризацией ошибок по пользователю
-    res = {}
-    for y in ("converted", "bnpl"):
-        m = smf.ols(f"{y} ~ above_cap * post + C(category)", data=df).fit(
-            cov_type="cluster", cov_kwds={"groups": df.user_id})
-        b, ci = m.params["above_cap:post"], m.conf_int().loc["above_cap:post"]
-        res[y] = dict(did=round(b, 4), ci95=[round(ci[0], 4), round(ci[1], 4)], p_value=float(f"{m.pvalues['above_cap:post']:.2e}"))
+    res = {y: did_estimate(df, y) for y in ("converted", "bnpl")}
+    placebo_res = [placebo(df, d) for d in PLACEBO_DATES]
+    res_trend = {y: did_estimate(df, y, trends=True) for y in ("converted", "bnpl")}
 
     g = df.groupby(["above_cap", "post"])[["converted", "bnpl"]].mean().round(4)
 
@@ -83,6 +114,8 @@ def main() -> dict:
         n_checkouts=len(df),
         group_means={f"above_cap={a},post={p}": v for (a, p), v in g.to_dict("index").items()},
         did=res,
+        placebo=placebo_res,
+        did_with_group_trends=res_trend,
         weeks_post=int(weeks_post),
         exposed_gmv_rub=round(exposed_gmv),
         lost_bnpl_gmv_rub=round(lost_bnpl_gmv),
