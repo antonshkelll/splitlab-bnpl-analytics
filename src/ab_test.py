@@ -15,7 +15,6 @@ A/B-тест «Сплит на карточке товара» (3–30 авгу�
 import json
 
 import numpy as np
-import pandas as pd
 from scipy import stats
 
 from common import COLORS, FIG, ROOT, connect, plt
