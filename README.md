@@ -130,7 +130,10 @@ git clone https://github.com/antonshkelll/splitlab-bnpl-analytics.git
 cd splitlab-bnpl-analytics
 py -m venv .venv; .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python src/generate_data.py; python src/marts.py; python src/regulation_impact.py; python src/ab_test.py
+python src/generate_data.py
+python src/marts.py
+python src/regulation_impact.py
+python src/ab_test.py
 ```
 
 Витрины для BI сохраняются в [`marts/`](marts/) в CSV; их можно подключить к Yandex DataLens или Superset.
@@ -148,6 +151,6 @@ SQL (DuckDB: CTE, оконные функции, FILTER, скользящие о
 ## Связанные проекты
 
 - [Uplift](https://github.com/antonshkelll/uplift-targeting): кому показывать предложение
-- [Экономика быстрого платежа](https://github.com/antonshkelll/sbp-economics): стоимость платежа для продавца, [калькулятор](https://sbp.antonshkel.ru)
+- [Экономика быстрого платежа](https://github.com/antonshkelll/sbp-economics): стоимость платежа для продавца, [калькулятор](https://antonshkelll.github.io/sbp-economics/)
 
 Все проекты собраны в [профиле](https://github.com/antonshkelll).
